@@ -98,7 +98,7 @@ def journal(dataRow):
         #page
         page = dataRow["Pages"]
         if page != "":
-            citationDetail += " p. " + page +"."
+            citationDetail += " pp. " + page +"."
 
     return ("<p>" + citationDetail + "</p>\n")
 
@@ -114,7 +114,6 @@ def website(dataRow):
     citationDetail += str(url_sorting(dataRow["URL"]))
     #Accessed date #Must
     citationDetail += str(accessed_sorting(dataRow["Day Accessed"],dataRow["Month Accessed"],dataRow["Year Accessed"]))
-
     return ("<p>" + citationDetail + "</p>\n")
 
 with open(csvPath, newline = "",encoding="utf-8-sig") as csvfile:
@@ -130,7 +129,7 @@ with open(csvPath, newline = "",encoding="utf-8-sig") as csvfile:
 print("Select result exporting location")
 htmlPath = filedialog.asksaveasfilename()
 htmlPath = htmlPath+".html"
-print(outHTML)
 
+outHTML = sorted(outHTML)
 with open(htmlPath, "w") as f:
     f.write(outHTML)
