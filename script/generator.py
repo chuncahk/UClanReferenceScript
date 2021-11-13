@@ -98,7 +98,7 @@ def journal(dataRow):
         #page
         page = dataRow["Pages"]
         if page != "":
-            citationDetail += " p. " + page +"."
+            citationDetail += " pp. " + page +"."
 
     return ("<p>" + citationDetail + "</p>\n")
 
