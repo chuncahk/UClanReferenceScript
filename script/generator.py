@@ -5,11 +5,6 @@ from tkinter import filedialog
 root = tk.Tk()
 root.withdraw()
 
-print("Select CSV file")
-csvPath = filedialog.askopenfilename()
-
-htmlList = []
-
 def removeLastSpace(word):
     if word == "":
         return(word)
@@ -29,7 +24,7 @@ def author_sorting(authors, corpAuthor):
             names = authors[0].split(" ")
             authorSector += names[-1] + ", " #Lastname
             for name in names[:-1]:
-                authorSector += name[0] + "."
+                authorSector += name[0].upper() + "."
         else:
             for n, names in enumerate(authors):
                 if n == 0:
@@ -139,27 +134,110 @@ def book(dataRow):
 
     return ("<p>" + citationDetail + "</p>\n")
 
-with open(csvPath, newline = "",encoding="utf-8-sig") as csvfile:
-    reference = csv.DictReader(csvfile)
-    for row in reference:
-        t = row["Type"]
-        if t == "Journal":
-            result = (journal(row))
-        if t == "Website":
-            result = (website(row))
-        if t == "Book":
-            result = (book(row))
-        htmlList.append(str(result))
+def exportHTML():
+    print("Select CSV database file")
+    csvPath = filedialog.askopenfilename()
+    htmlList = []
+    with open(csvPath,"r", newline = "",encoding="utf-8-sig") as csvfile:
+        reference = csv.DictReader(csvfile)
+        for row in reference:
+            t = row["Type"]
+            if t == "Journal":
+                result = (journal(row))
+            if t == "Website":
+                result = (website(row))
+            if t == "Book":
+                result = (book(row))
+            htmlList.append(str(result))
 
-htmlList = sorted(htmlList)
-print("Select result exporting location")
-htmlPath = filedialog.asksaveasfilename()
-if ".html" not in htmlPath:
-    htmlPath = htmlPath+".html"
-#htmlList = sorted(htmlList)
-outHTML = ""
-for h in htmlList:
-    outHTML += str(h)
+    htmlList = sorted(htmlList)
+    print("Select result exporting location")
+    htmlPath = filedialog.asksaveasfilename()
+    if ".html" not in htmlPath:
+        htmlPath = htmlPath+".html"
+    outHTML = ""
+    for h in htmlList:
+        outHTML += str(h)
 
-with open(htmlPath, "w") as f:
-    f.write(outHTML)
+    with open(htmlPath, "w") as f:
+        f.write(outHTML)
+
+#---------------------------------------------
+# Writing
+#---------------------------------------------
+def writecsv(dataDict):
+    print("Select CSV database file")
+    csvPath = filedialog.askopenfilename()
+    with open(csvPath,"r", newline = "",encoding="utf-8-sig") as csvfile:
+        fieldnames = csvfile.readline().split(",")
+    with open(csvPath,"a", newline = "",encoding="utf-8-sig") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writerows(dataDict)
+
+def add_author():
+    authors = {}
+    while 1:
+        print("""Individual Author / Corporate Author
+    1.Individual
+    2.Corporate Author""")
+        choice = input("Action Number: ")
+
+        print("Author Name (FirstName MiddleName LastName)")
+        name = input()
+        if name != "":
+            break
+
+def add_journal():
+    add_author()
+
+def writePortal():
+    while 1:
+        try:
+            print("""What type of document you want to add?
+    1.Journal / Dissertation
+    2.Website
+    3.Book""")
+            choice = int(input("Document Type Number: "))
+            if choice == 1:
+                add_journal()
+                
+            else:
+                continue
+            
+            print("Do you want to add more? Y/N")
+            more = input("Y/N? : ")
+            if more == "Y":
+                continue
+            else:
+                break
+        except:
+            print("Please only type in a number <--------------------------------------")
+            continue
+
+#---------------------------------------------
+# Selection
+#---------------------------------------------
+def action():
+    while 1:
+        print("""State your business:
+    1.Create new references (Not Finish yet)
+    2.Export from existing database
+        """
+        )
+        try:
+            choice = int(input("Action number: "))
+            if choice in range(1,3):
+                return(choice)
+                break
+            else:
+                continue
+        except:
+            print("Please only type in a number <--------------------------------------")
+            continue
+
+if __name__ == '__main__':
+    choice = action()
+    if choice == 2:
+        exportHTML()
+    elif choice == 1:
+        writePortal()
