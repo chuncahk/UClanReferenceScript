@@ -8,7 +8,7 @@ root.withdraw()
 print("Select CSV file")
 csvPath = filedialog.askopenfilename()
 
-outHTML = ""
+htmlList = []
 
 def removeLastSpace(word):
     if word == "":
@@ -35,7 +35,7 @@ def author_sorting(authors, corpAuthor):
                 if n == 0:
                     pass
                 elif n == len(authors)-1:
-                    authorSector += ", and "
+                    authorSector += " and "
                 else:
                     authorSector += ", "
                 nameList = names.split(" ")
@@ -116,6 +116,29 @@ def website(dataRow):
     citationDetail += str(accessed_sorting(dataRow["Day Accessed"],dataRow["Month Accessed"],dataRow["Year Accessed"]))
     return ("<p>" + citationDetail + "</p>\n")
 
+def book(dataRow):
+    citationDetail = ""
+    #Author
+    citationDetail += str(author_sorting(dataRow["Author"], dataRow["Corporate Author"]))
+    #Year #Must
+    citationDetail += str(year_sorting(dataRow["Year"]))
+    #Title #Must
+    citationDetail += "<em>" + str(title_sorting(dataRow["Title"])) + "</em>"
+    #Edition #Must
+    edition = dataRow["Edition"]
+    if edition != "":
+        citationDetail += " " + edition + " ed"
+    #Publisher #Must
+    publisher = dataRow["Publisher"]
+    if publisher != "":
+        citationDetail += ", " + publisher
+    #Publisher #Must
+    city = dataRow["City"]
+    if city != "":
+        citationDetail += ", " + city + "."
+
+    return ("<p>" + citationDetail + "</p>\n")
+
 with open(csvPath, newline = "",encoding="utf-8-sig") as csvfile:
     reference = csv.DictReader(csvfile)
     for row in reference:
@@ -124,12 +147,19 @@ with open(csvPath, newline = "",encoding="utf-8-sig") as csvfile:
             result = (journal(row))
         if t == "Website":
             result = (website(row))
-        outHTML += str(result)
+        if t == "Book":
+            result = (book(row))
+        htmlList.append(str(result))
 
+htmlList = sorted(htmlList)
 print("Select result exporting location")
 htmlPath = filedialog.asksaveasfilename()
-htmlPath = htmlPath+".html"
+if ".html" not in htmlPath:
+    htmlPath = htmlPath+".html"
+#htmlList = sorted(htmlList)
+outHTML = ""
+for h in htmlList:
+    outHTML += str(h)
 
-outHTML = sorted(outHTML)
 with open(htmlPath, "w") as f:
     f.write(outHTML)
