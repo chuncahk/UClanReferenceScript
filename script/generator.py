@@ -72,17 +72,21 @@ def accessed_sorting(day, month, year):
 def journal(dataRow):
     citationDetail = ""
     #Author
-    citationDetail += str(author_sorting(dataRow["Author"], dataRow["Corporate Author"]))
+    authorNumber = len(dataRow["Author"].split(":"))
+    author = str(author_sorting(dataRow["Author"], dataRow["Corporate Author"]))
     #Year #Must
-    citationDetail += str(year_sorting(dataRow["Year"]))
+    year = str(year_sorting(dataRow["Year"]))
     #Title #Must
-    citationDetail += str(title_sorting(dataRow["Title"]))
-
+    title = str(title_sorting(dataRow["Title"]))
     #Journal Name
     journalName = dataRow["Journal Name"]
     if journalName != "":
-        citationDetail += "<em>" + journalName + "</em>, "
+        journalTitle= "<em>" + journalName + "</em>, "
         #Volume
+        if authorNumber == 1:
+            citationDetail = author + year + title + journalTitle
+        else:
+            citationDetail = author + year + journalTitle + title
         volume = dataRow["Volume"]
         if volume != "":
             citationDetail += volume
@@ -94,8 +98,11 @@ def journal(dataRow):
         page = dataRow["Pages"]
         if page != "":
             citationDetail += " pp. " + page +"."
+    else:
+        citationDetail = author + year + title
 
     return ("<p>" + citationDetail + "</p>\n")
+
 
 def website(dataRow):
     citationDetail = ""
